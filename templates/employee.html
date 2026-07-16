@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <!-- <ul>
+        {% for emp in employee_list %}
+        <h2><li>
+            Name : {{emp.name}} | Department : {{emp.department}} | Salary : {{emp.salary}}
+        </li></h2>
+        {% endfor %}
+    </ul> -->
+
+    <table border = "1">
+        <tr>
+            <th>Name</th>
+            <th>Department</th>
+            <th>Salary</th>
+        </tr>
+        {% for emp in employee_list %}
+        <tr>
+            <td>{{emp.name}}</td>
+            <td>{{emp.department}}</td>
+            <td>{{emp.salary}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+
+{% endblock %}
