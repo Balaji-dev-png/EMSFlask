@@ -80,3 +80,9 @@ def emppage():
         },
     ]
     return render_template("employee.html", employee_list = employee_list)
+
+
+
+@emp_bp.route("/emp/add")
+def addemp():
+    return render_template("addemp.html")

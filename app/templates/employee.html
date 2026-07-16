@@ -9,12 +9,18 @@
         {% endfor %}
     </ul> -->
 
-    <table border = "1">
+    <h1>Employee Page</h1>
+    <a href="/emp/add" class="btn btn-primary mx-4 my-4">Add Employee</a>
+
+    <table class="table table-bordered table-hover">
+        <thead class="table-dark">
         <tr>
             <th>Name</th>
             <th>Department</th>
             <th>Salary</th>
         </tr>
+        </thead>
+
         {% for emp in employee_list %}
         <tr>
             <td>{{emp.name}}</td>
