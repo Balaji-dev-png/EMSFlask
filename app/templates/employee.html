@@ -10,22 +10,26 @@
     </ul> -->
 
     <h1>Employee Page</h1>
-    <a href="/emp/add" class="btn btn-primary mx-4 my-4">Add Employee</a>
+    <a href="/emp/register" class="btn btn-primary mx-4 my-4">Add Employee</a>
 
     <table class="table table-bordered table-hover">
         <thead class="table-dark">
         <tr>
+            <th>Id</th>
             <th>Name</th>
             <th>Department</th>
             <th>Salary</th>
+            <th>Email</th>
         </tr>
         </thead>
 
         {% for emp in employee_list %}
         <tr>
+            <td>{{emp.id}}</td>
             <td>{{emp.name}}</td>
             <td>{{emp.department}}</td>
             <td>{{emp.salary}}</td>
+            <td>{{emp.email}}</td>
         </tr>
         {% endfor %}
     </table>

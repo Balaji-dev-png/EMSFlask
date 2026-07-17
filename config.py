@@ -4,7 +4,7 @@
 class Config:
 
     #sqlalchemy sepcific
-    SQLALCHEMY_DATABASE_URI = "sqlite:///database.db"
+    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://balaji:Balaji_123@localhost:3306/ems_db"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     SECRET_KEY = "12defndsgd"

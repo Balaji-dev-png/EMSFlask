@@ -44,45 +44,45 @@ emp_bp = Blueprint('emp', __name__)
 
 
 
-# @emp_bp.route("/employee/register", methods=["POST"])
-# def empregister():
-
-#     data = request.get_json()
-
-#     name = data["name"]
-#     email = data["email"]
-#     password = data["password"]
-
-#     return f"Name : {name} | Email : {email} | Password : {password}"
+@emp_bp.route("/emp/register")
+def empregister():
+    return render_template("addemp.html")
 
 
 
 
 @emp_bp.route("/emp")
 def emppage():
-    employee_list = [
-        {
-            "name" : "aniket",
-            "department" : "Mtech",
-            "salary" : 500000000000
-        },
 
-        {
-            "name" : "bhanu",
-            "department" : "Btech",
-            "salary" : 900000000000
-        },
 
-        {
-            "name" : "sadgyan",
-            "department" : "Mtech",
-            "salary" : 800000000000
-        },
-    ]
+    employee_list = Employee.query.all()
     return render_template("employee.html", employee_list = employee_list)
 
 
 
-@emp_bp.route("/emp/add")
+
+from app.models.employee import Employee
+from app.models import db
+
+
+@emp_bp.route("/emp/add", methods = ["POST"])
 def addemp():
+
+    if request.method == "POST":
+        employee = Employee (
+            name = request.form["name"],
+            email = request.form["email"],
+            department = request.form["department"],
+            salary = request.form["salary"]
+        )
+
+
+        db.session.add(employee) # to create query to add data to the database
+        db.session.commit() # to run the query on the server
+
+
+        return redirect(url_for("emp.emppage")) # to redirect to the employee page after adding the employee
+
+
+
     return render_template("addemp.html")
