@@ -1,4 +1,29 @@
 {% extends "base.html" %}
+
 {% block content %}
-    <h1>Department Page</h1>
+<div class="d-flex justify-content-between align-items-center mb-4 mt-2">
+    <h1>Departments</h1>
+</div>
+
+<div class="row g-4">
+    {% if departments %}
+        {% for dept, count in departments %}
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body text-center py-4">
+                    <h4 class="card-title fw-bold mb-3">{{ dept }}</h4>
+                    <p class="card-text text-muted mb-4">{{ count }} Employee{% if count != 1 %}s{% endif %}</p>
+                    <a href="/emp?department={{ dept }}" class="btn btn-outline-dark w-100">View Employees</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="col-12">
+            <div class="alert alert-warning text-center" role="alert">
+                <strong>No departments found!</strong> Add some employees to create departments.
+            </div>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

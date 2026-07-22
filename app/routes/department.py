@@ -1,21 +1,17 @@
 from flask import Blueprint, render_template
+from app.models.employee import Employee
+from app.models import db
 
 depart_bp = Blueprint('department', __name__)
 
-# @depart_bp.route('/department')
-# def department():
-#     return "<h1>this is my department page</h1>"
-
-# @depart_bp.route('/department/sales')
-# def sales():
-#     return "<h1>this is my sales page</h1>"
-
-# @depart_bp.route('/department/address')
-# def address():
-#     return "<h1>this is my address page</h1>"
-
-
-
 @depart_bp.route("/depart")
 def depart():
-    return render_template("department.html")
+    try:
+        departments = db.session.query(
+            Employee.department, 
+            db.func.count(Employee.id)
+        ).group_by(Employee.department).all()
+    except Exception:
+        departments = []
+
+    return render_template("department.html", departments=departments)

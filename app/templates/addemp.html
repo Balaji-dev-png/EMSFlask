@@ -1,26 +1,44 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Add Employee</h1>
-    <form action="/emp/add" method="POST">
-        <div class="mb-3 mx-4 my-4">
-            <label for="name">Name</label>
-            <input type="text" class="form-control" id="name" name="name">
-        </div>
+<div class="row justify-content-center mt-2">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white py-3">
+                <h4 class="mb-0 fw-bold">Add New Employee</h4>
+            </div>
+            <div class="card-body p-4">
+                <form action="/emp/add" method="POST">
+                    <div class="mb-3">
+                        <label for="name" class="form-label fw-semibold">Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
 
-        <div class="mb-3 mx-4 my-4">
-            <label>Email: </label>
-            <input type="email" class="form-control" id="email" name="email">
-        </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-semibold">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
 
-        <div class="mb-3 mx-4 my-4">
-            <label for="department">Department</label>
-            <input type="text" class="form-control" id="department" name="department">
+                    <div class="mb-3">
+                        <label for="department" class="form-label fw-semibold">Department</label>
+                        <input type="text" class="form-control" id="department" name="department" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="salary" class="form-label fw-semibold">Salary</label>
+                        <div class="input-group">
+                            <span class="input-group-text">₹</span>
+                            <input type="number" class="form-control" id="salary" name="salary" required>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="/emp" class="btn btn-outline-secondary px-4">Cancel</a>
+                        <button type="submit" class="btn btn-dark px-4">Save Employee</button>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div class="mb-3 mx-4 my-4">
-            <label for="salary">Salary</label>
-            <input type="number" class="form-control" id="salary" name="salary">
-        </div>
-        <button type="submit" class="btn btn-primary">Add Employee</button>
-    </form>
+    </div>
+</div>
 {% endblock %}

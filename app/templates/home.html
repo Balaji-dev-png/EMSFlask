@@ -1,35 +1,29 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-
-<div class = "row">
-    <div class = "col-md-4">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Employee Management</h5>
-                <h5>34</h5>
-                <a href="#" class="btn btn-primary">View</a>
+<div class="row g-4 mt-2">
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body d-flex flex-column text-center py-5">
+                <h3 class="card-title fw-bold mb-3">Total Employees</h3>
+                <h1 class="display-3 fw-bold mb-4">{{ total_employees|default(0) }}</h1>
+                <div class="mt-auto">
+                    <a href="/emp" class="btn btn-dark btn-lg px-5">View Employees</a>
+                </div>
             </div>
         </div>
     </div>
 
-
-
-
-    <div class = "col-md-4">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Total Department</h5>
-                <h5>4</h5>
-                <a href="#" class="btn btn-primary">View</a>
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-body d-flex flex-column text-center py-5">
+                <h3 class="card-title fw-bold mb-3">Total Departments</h3>
+                <h1 class="display-3 fw-bold mb-4">{{ total_departments|default(0) }}</h1>
+                <div class="mt-auto">
+                    <a href="/depart" class="btn btn-dark btn-lg px-5">View Departments</a>
+                </div>
             </div>
         </div>
     </div>
 </div>
-
-
-
-
-
 {% endblock %}
