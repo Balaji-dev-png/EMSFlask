@@ -1,28 +1,24 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4 mt-2">
-    <h1>Departments</h1>
+<div class="flex justify-between items-center mb-8 mt-8">
+    <h2 class="text-2xl font-bold text-white uppercase tracking-wider">
+        Departments
+    </h2>
 </div>
 
-<div class="row g-4">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     {% if departments %}
         {% for dept, count in departments %}
-        <div class="col-md-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body text-center py-4">
-                    <h4 class="card-title fw-bold mb-3">{{ dept }}</h4>
-                    <p class="card-text text-muted mb-4">{{ count }} Employee{% if count != 1 %}s{% endif %}</p>
-                    <a href="/emp?department={{ dept }}" class="btn btn-outline-dark w-100">View Employees</a>
-                </div>
-            </div>
+        <div class="border border-gray-800 p-6 text-center">
+            <h4 class="text-lg font-bold text-white mb-2">{{ dept }}</h4>
+            <p class="text-gray-400 text-sm mb-6">{{ count }} Employee{% if count != 1 %}s{% endif %}</p>
+            <a href="/emp?department={{ dept }}" class="inline-block w-full py-2 border border-gray-600 text-white text-sm hover:bg-gray-800 transition-colors">Explore</a>
         </div>
         {% endfor %}
     {% else %}
-        <div class="col-12">
-            <div class="alert alert-warning text-center" role="alert">
-                <strong>No departments found!</strong> Add some employees to create departments.
-            </div>
+        <div class="col-span-full border border-gray-800 p-12 text-center">
+            <h4 class="text-lg text-gray-400">No departments found. Add some employees first.</h4>
         </div>
     {% endif %}
 </div>

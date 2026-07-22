@@ -4,22 +4,15 @@ from app.models import db
 
 emp_bp = Blueprint('emp', __name__)
 
-@emp_bp.route("/emp/register")
-def empregister():
-    return render_template("addemp.html")
-
 @emp_bp.route("/emp")
 def emppage():
     search = request.args.get('search', '')
     search_by = request.args.get('search_by', 'name')
-    
-    filter_department = request.args.get('department', '')
+    department = request.args.get('department', '')
     min_salary = request.args.get('min_salary', type=float)
     max_salary = request.args.get('max_salary', type=float)
-    
     sort_by = request.args.get('sort_by', 'id')
     sort_order = request.args.get('sort_order', 'asc')
-    
     page = request.args.get('page', 1, type=int)
     per_page = request.args.get('per_page', 5, type=int)
 
@@ -33,25 +26,20 @@ def emppage():
         elif search_by == 'department':
             query = query.filter(Employee.department.ilike(f'%{search}%'))
 
-    if filter_department:
-        query = query.filter(Employee.department == filter_department)
-    
+    if department:
+        query = query.filter(Employee.department == department)
     if min_salary is not None:
         query = query.filter(Employee.salary >= min_salary)
-    
     if max_salary is not None:
         query = query.filter(Employee.salary <= max_salary)
 
-    if sort_by == 'name':
-        sort_column = Employee.name
-    elif sort_by == 'email':
-        sort_column = Employee.email
-    elif sort_by == 'department':
-        sort_column = Employee.department
-    elif sort_by == 'salary':
-        sort_column = Employee.salary
-    else:
-        sort_column = Employee.id
+    sort_columns = {
+        'name': Employee.name,
+        'email': Employee.email,
+        'department': Employee.department,
+        'salary': Employee.salary
+    }
+    sort_column = sort_columns.get(sort_by, Employee.id)
 
     if sort_order == 'desc':
         query = query.order_by(sort_column.desc())
@@ -69,38 +57,25 @@ def emppage():
         departments=departments
     )
 
-
-
-@emp_bp.route("/emp/add", methods = ["POST", "GET"])
+@emp_bp.route("/emp/register", methods=["GET", "POST"])
 def addemp():
     if request.method == "POST":
-        employee = Employee (
-            name = request.form["name"],
-            email = request.form["email"],
-            department = request.form["department"],
-            salary = request.form["salary"]
+        employee = Employee(
+            name=request.form["name"],
+            email=request.form["email"],
+            department=request.form["department"],
+            salary=request.form["salary"]
         )
-
-
-        db.session.add(employee) # to create query to add data to the database
-        db.session.commit() # to run the query on the server
-
-
-        return redirect(url_for("emp.emppage")) # to redirect to the employee page after adding the employee
-
-
+        db.session.add(employee)
+        db.session.commit()
+        return redirect(url_for("emp.emppage"))
 
     return render_template("addemp.html")
 
-
-
-@emp_bp.route("/emp/empdetail/<int:emp_id>", methods = ["GET"])
+@emp_bp.route("/emp/empdetail/<int:emp_id>")
 def empdetail(emp_id):
-
     employee = Employee.query.get_or_404(emp_id)
-
-    return render_template("emp_detail.html", employee = employee)
-
+    return render_template("emp_detail.html", employee=employee)
 
 @emp_bp.route("/emp/update/<int:emp_id>", methods=["GET", "POST"])
 def empupdate(emp_id):
@@ -111,7 +86,6 @@ def empupdate(emp_id):
         employee.email = request.form["email"]
         employee.department = request.form["department"]
         employee.salary = request.form["salary"]
-        
         db.session.commit()
         return redirect(url_for("emp.emppage"))
         
@@ -119,10 +93,7 @@ def empupdate(emp_id):
 
 @emp_bp.route("/emp/empdelete/<int:emp_id>")
 def empdelete(emp_id):
-
     employee = Employee.query.get_or_404(emp_id)
-
     db.session.delete(employee)
     db.session.commit()
-
     return redirect(url_for("emp.emppage"))

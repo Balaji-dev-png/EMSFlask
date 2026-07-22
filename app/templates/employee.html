@@ -1,165 +1,163 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Employee Management</h1>
-        <a href="/emp/register" class="btn btn-success">Add New Employee</a>
-    </div>
+<div class="flex justify-between items-center mb-8 mt-4">
+    <h2 class="text-2xl font-bold text-white uppercase tracking-wider">
+        Employee Directory
+    </h2>
+    <a href="/emp/register" class="bg-white text-black px-4 py-2 text-sm hover:bg-gray-200 transition-colors">
+        Add Employee
+    </a>
+</div>
 
-    <!-- Search and Filter Form -->
-    <div class="card mb-4 shadow-sm">
-        <div class="card-body">
-            <form action="/emp" method="GET">
-                <div class="row g-3">
-                    <!-- Search -->
-                    <div class="col-md-4">
-                        <label class="form-label fw-semibold">Search</label>
-                        <div class="input-group">
-                            <select name="search_by" class="form-select" style="max-width: 120px;">
-                                <option value="name" {% if request.args.get('search_by') == 'name' %}selected{% endif %}>Name</option>
-                                <option value="email" {% if request.args.get('search_by') == 'email' %}selected{% endif %}>Email</option>
-                                <option value="department" {% if request.args.get('search_by') == 'department' %}selected{% endif %}>Dept</option>
-                            </select>
-                            <input type="text" name="search" class="form-control" placeholder="Search..." value="{{ request.args.get('search', '') }}">
-                        </div>
-                    </div>
-                    
-                    <!-- Filter Department -->
-                    <div class="col-md-2">
-                        <label class="form-label fw-semibold">Department</label>
-                        <select name="department" class="form-select">
-                            <option value="">All</option>
-                            {% for dept in departments %}
-                                <option value="{{ dept }}" {% if request.args.get('department') == dept %}selected{% endif %}>{{ dept }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Filter Salary Range -->
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold">Salary Range</label>
-                        <div class="input-group">
-                            <input type="number" name="min_salary" class="form-control" placeholder="Min" value="{{ request.args.get('min_salary', '') }}">
-                            <span class="input-group-text">-</span>
-                            <input type="number" name="max_salary" class="form-control" placeholder="Max" value="{{ request.args.get('max_salary', '') }}">
-                        </div>
-                    </div>
-
-                    <!-- Sort -->
-                    <div class="col-md-3">
-                        <label class="form-label fw-semibold">Sort By</label>
-                        <div class="input-group">
-                            <select name="sort_by" class="form-select">
-                                <option value="id" {% if request.args.get('sort_by') == 'id' %}selected{% endif %}>ID</option>
-                                <option value="name" {% if request.args.get('sort_by') == 'name' %}selected{% endif %}>Name</option>
-                                <option value="email" {% if request.args.get('sort_by') == 'email' %}selected{% endif %}>Email</option>
-                                <option value="department" {% if request.args.get('sort_by') == 'department' %}selected{% endif %}>Dept</option>
-                                <option value="salary" {% if request.args.get('sort_by') == 'salary' %}selected{% endif %}>Salary</option>
-                            </select>
-                            <select name="sort_order" class="form-select" style="max-width: 90px;">
-                                <option value="asc" {% if request.args.get('sort_order') == 'asc' %}selected{% endif %}>ASC</option>
-                                <option value="desc" {% if request.args.get('sort_order') == 'desc' %}selected{% endif %}>DESC</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <!-- Per Page and Buttons -->
-                    <div class="col-md-12 d-flex justify-content-between align-items-end mt-3">
-                        <div style="width: 150px;">
-                            <label class="form-label fw-semibold">Records per page</label>
-                            <select name="per_page" class="form-select">
-                                <option value="5" {% if request.args.get('per_page') == '5' or not request.args.get('per_page') %}selected{% endif %}>5</option>
-                                <option value="10" {% if request.args.get('per_page') == '10' %}selected{% endif %}>10</option>
-                            </select>
-                        </div>
-                        <div>
-                            <button type="submit" class="btn btn-primary px-4">Apply Filters</button>
-                            <a href="/emp" class="btn btn-secondary px-4 ms-2">Reset</a>
-                        </div>
-                    </div>
+<!-- Search and Filter Form -->
+<div class="border border-gray-800 mb-8 p-6">
+    <form action="/emp" method="GET">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Search -->
+            <div>
+                <label class="block text-sm text-gray-400 mb-2">Search</label>
+                <div class="flex border border-gray-800">
+                    <select name="search_by" class="bg-black text-white px-3 py-2 border-r border-gray-800 outline-none text-sm">
+                        <option value="name" {% if request.args.get('search_by') == 'name' %}selected{% endif %}>Name</option>
+                        <option value="email" {% if request.args.get('search_by') == 'email' %}selected{% endif %}>Email</option>
+                        <option value="department" {% if request.args.get('search_by') == 'department' %}selected{% endif %}>Dept</option>
+                    </select>
+                    <input type="text" name="search" class="bg-black w-full px-3 py-2 text-white outline-none text-sm placeholder-gray-600" placeholder="Type here..." value="{{ request.args.get('search', '') }}">
                 </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Table -->
-    <div class="card shadow-sm mb-4">
-        <div class="card-body p-0">
-            {% if pagination.items|length > 0 %}
-            <div class="table-responsive">
-                <table class="table table-striped table-hover mb-0 align-middle">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Id</th>
-                            <th>Name</th>
-                            <th>Department</th>
-                            <th>Salary</th>
-                            <th>Email</th>
-                            <th class="text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for emp in pagination.items %}
-                        <tr>
-                            <td>{{emp.id}}</td>
-                            <td><span class="fw-bold">{{emp.name}}</span></td>
-                            <td><span class="badge bg-secondary">{{emp.department}}</span></td>
-                            <td>₹{{emp.salary}}</td>
-                            <td>{{emp.email}}</td>
-                            <td class="text-center">
-                                <div class="btn-group" role="group">
-                                    <a href="/emp/empdetail/{{emp.id}}" class="btn btn-sm btn-info text-white">View</a>
-                                    <!-- Using view details as update link since it was that way originally -->
-                                    <a href="/emp/update/{{emp.id}}" class="btn btn-sm btn-warning text-dark">Update</a>
-                                    <a href="/emp/empdelete/{{emp.id}}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this employee?');">Delete</a> 
-                                </div>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
             </div>
-            {% else %}
-            <div class="alert alert-warning m-4 text-center" role="alert">
-                <strong>No employee records found!</strong> Try adjusting your search or filters.
+            
+            <!-- Filter Department -->
+            <div>
+                <label class="block text-sm text-gray-400 mb-2">Department</label>
+                <select name="department" class="w-full bg-black text-white px-4 py-2 border border-gray-800 outline-none text-sm">
+                    <option value="">All Departments</option>
+                    {% for dept in departments %}
+                        <option value="{{ dept }}" {% if request.args.get('department') == dept %}selected{% endif %}>{{ dept }}</option>
+                    {% endfor %}
+                </select>
             </div>
-            {% endif %}
+
+            <!-- Filter Salary Range -->
+            <div>
+                <label class="block text-sm text-gray-400 mb-2">Salary Range</label>
+                <div class="flex items-center gap-2">
+                    <input type="number" name="min_salary" class="w-full bg-black text-white px-3 py-2 border border-gray-800 outline-none text-sm placeholder-gray-600" placeholder="Min" value="{{ request.args.get('min_salary', '') }}">
+                    <span class="text-gray-600">-</span>
+                    <input type="number" name="max_salary" class="w-full bg-black text-white px-3 py-2 border border-gray-800 outline-none text-sm placeholder-gray-600" placeholder="Max" value="{{ request.args.get('max_salary', '') }}">
+                </div>
+            </div>
+
+            <!-- Sort -->
+            <div>
+                <label class="block text-sm text-gray-400 mb-2">Sort By</label>
+                <div class="flex border border-gray-800">
+                    <select name="sort_by" class="w-full bg-black text-white px-3 py-2 border-r border-gray-800 outline-none text-sm">
+                        <option value="id" {% if request.args.get('sort_by') == 'id' %}selected{% endif %}>ID</option>
+                        <option value="name" {% if request.args.get('sort_by') == 'name' %}selected{% endif %}>Name</option>
+                        <option value="email" {% if request.args.get('sort_by') == 'email' %}selected{% endif %}>Email</option>
+                        <option value="department" {% if request.args.get('sort_by') == 'department' %}selected{% endif %}>Dept</option>
+                        <option value="salary" {% if request.args.get('sort_by') == 'salary' %}selected{% endif %}>Salary</option>
+                    </select>
+                    <select name="sort_order" class="bg-black text-white px-3 py-2 outline-none text-sm text-center">
+                        <option value="asc" {% if request.args.get('sort_order') == 'asc' %}selected{% endif %}>ASC</option>
+                        <option value="desc" {% if request.args.get('sort_order') == 'desc' %}selected{% endif %}>DESC</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="col-span-1 md:col-span-2 lg:col-span-4 flex flex-col sm:flex-row justify-between items-center mt-4 pt-6 border-t border-gray-800 gap-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-gray-400 text-sm">Show</span>
+                    <select name="per_page" class="bg-black text-white px-3 py-1 border border-gray-800 outline-none text-sm">
+                        <option value="5" {% if request.args.get('per_page') == '5' or not request.args.get('per_page') %}selected{% endif %}>5</option>
+                        <option value="10" {% if request.args.get('per_page') == '10' %}selected{% endif %}>10</option>
+                    </select>
+                    <span class="text-gray-400 text-sm">records</span>
+                </div>
+                <div class="flex items-center gap-4">
+                    <a href="/emp" class="text-sm text-gray-400 hover:text-white underline">Reset</a>
+                    <button type="submit" class="bg-white text-black px-6 py-2 text-sm hover:bg-gray-200 transition-colors">
+                        Apply Filters
+                    </button>
+                </div>
+            </div>
         </div>
-    </div>
+    </form>
+</div>
 
-    <!-- Pagination -->
-    {% if pagination.pages > 1 %}
-    <div class="d-flex justify-content-between align-items-center mb-5">
-        <p class="text-muted mb-0">
-            Showing page <span class="fw-bold">{{ pagination.page }}</span> of <span class="fw-bold">{{ pagination.pages }}</span> (Total: {{ pagination.total }} records)
-        </p>
-        <nav aria-label="Page navigation">
-            <ul class="pagination mb-0">
-                <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
-                    <a class="page-link" href="{{ url_for('emp.emppage', search=request.args.get('search'), search_by=request.args.get('search_by'), department=request.args.get('department'), min_salary=request.args.get('min_salary'), max_salary=request.args.get('max_salary'), sort_by=request.args.get('sort_by'), sort_order=request.args.get('sort_order'), per_page=request.args.get('per_page'), page=pagination.prev_num) }}" aria-label="Previous">
-                        <span aria-hidden="true">&laquo; Previous</span>
-                    </a>
-                </li>
-                
-                {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
-                    {% if page_num %}
-                        <li class="page-item {% if pagination.page == page_num %}active{% endif %}">
-                            <a class="page-link" href="{{ url_for('emp.emppage', search=request.args.get('search'), search_by=request.args.get('search_by'), department=request.args.get('department'), min_salary=request.args.get('min_salary'), max_salary=request.args.get('max_salary'), sort_by=request.args.get('sort_by'), sort_order=request.args.get('sort_order'), per_page=request.args.get('per_page'), page=page_num) }}">{{ page_num }}</a>
-                        </li>
-                    {% else %}
-                        <li class="page-item disabled"><span class="page-link">...</span></li>
-                    {% endif %}
-                {% endfor %}
-
-                <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
-                    <a class="page-link" href="{{ url_for('emp.emppage', search=request.args.get('search'), search_by=request.args.get('search_by'), department=request.args.get('department'), min_salary=request.args.get('min_salary'), max_salary=request.args.get('max_salary'), sort_by=request.args.get('sort_by'), sort_order=request.args.get('sort_order'), per_page=request.args.get('per_page'), page=pagination.next_num) }}" aria-label="Next">
-                        <span aria-hidden="true">Next &raquo;</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
+<!-- Table -->
+<div class="border border-gray-800 mb-8 overflow-x-auto">
+    {% if pagination.items|length > 0 %}
+    <table class="w-full text-left border-collapse">
+        <thead>
+            <tr class="border-b border-gray-800 text-gray-400 text-xs uppercase tracking-wider bg-gray-900/50">
+                <th class="p-4 font-normal">Id</th>
+                <th class="p-4 font-normal">Name</th>
+                <th class="p-4 font-normal">Department</th>
+                <th class="p-4 font-normal">Salary</th>
+                <th class="p-4 font-normal">Email</th>
+                <th class="p-4 text-right font-normal">Action</th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-800">
+            {% for emp in pagination.items %}
+            <tr class="hover:bg-gray-900 transition-colors">
+                <td class="p-4 text-gray-400 text-sm">{{emp.id}}</td>
+                <td class="p-4 text-white text-sm">{{emp.name}}</td>
+                <td class="p-4 text-gray-300 text-sm">{{emp.department}}</td>
+                <td class="p-4 text-white text-sm">₹{{emp.salary}}</td>
+                <td class="p-4 text-gray-400 text-sm">{{emp.email}}</td>
+                <td class="p-4 text-right">
+                    <div class="flex items-center justify-end gap-3 text-xs uppercase tracking-wide">
+                        <a href="/emp/empdetail/{{emp.id}}" class="text-white hover:text-gray-400 underline">View</a>
+                        <a href="/emp/update/{{emp.id}}" class="text-white hover:text-gray-400 underline">Update</a>
+                        <a href="/emp/empdelete/{{emp.id}}" class="text-white hover:text-gray-400 underline" onclick="return confirm('Are you sure you want to delete this employee?');">Delete</a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="text-center p-16">
+        <h4 class="text-lg text-gray-400 m-0">No employee records found.</h4>
     </div>
     {% endif %}
 </div>
+
+<!-- Pagination -->
+{% if pagination.pages > 1 %}
+<div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+    <p class="text-gray-400 text-sm">
+        Page <span class="text-white">{{ pagination.page }}</span> of <span class="text-white">{{ pagination.pages }}</span>
+    </p>
+    <nav aria-label="Page navigation">
+        <ul class="flex items-center gap-2">
+            <li>
+                <a class="flex items-center justify-center px-3 py-1 border border-gray-800 text-sm text-gray-400 hover:text-white hover:border-white transition-colors {% if not pagination.has_prev %}opacity-50 pointer-events-none{% endif %}" href="{{ url_for('emp.emppage', search=request.args.get('search'), search_by=request.args.get('search_by'), department=request.args.get('department'), min_salary=request.args.get('min_salary'), max_salary=request.args.get('max_salary'), sort_by=request.args.get('sort_by'), sort_order=request.args.get('sort_order'), per_page=request.args.get('per_page'), page=pagination.prev_num) }}">
+                    Prev
+                </a>
+            </li>
+            
+            {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                {% if page_num %}
+                    <li>
+                        <a class="flex items-center justify-center px-3 py-1 border text-sm transition-colors {% if pagination.page == page_num %}border-white text-white{% else %}border-gray-800 text-gray-400 hover:text-white hover:border-white{% endif %}" href="{{ url_for('emp.emppage', search=request.args.get('search'), search_by=request.args.get('search_by'), department=request.args.get('department'), min_salary=request.args.get('min_salary'), max_salary=request.args.get('max_salary'), sort_by=request.args.get('sort_by'), sort_order=request.args.get('sort_order'), per_page=request.args.get('per_page'), page=page_num) }}">{{ page_num }}</a>
+                    </li>
+                {% else %}
+                    <li><span class="text-gray-600">...</span></li>
+                {% endif %}
+            {% endfor %}
+
+            <li>
+                <a class="flex items-center justify-center px-3 py-1 border border-gray-800 text-sm text-gray-400 hover:text-white hover:border-white transition-colors {% if not pagination.has_next %}opacity-50 pointer-events-none{% endif %}" href="{{ url_for('emp.emppage', search=request.args.get('search'), search_by=request.args.get('search_by'), department=request.args.get('department'), min_salary=request.args.get('min_salary'), max_salary=request.args.get('max_salary'), sort_by=request.args.get('sort_by'), sort_order=request.args.get('sort_order'), per_page=request.args.get('per_page'), page=pagination.next_num) }}">
+                    Next
+                </a>
+            </li>
+        </ul>
+    </nav>
+</div>
+{% endif %}
 {% endblock %}

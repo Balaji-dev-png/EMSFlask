@@ -1,4 +1,1 @@
-body {
-    background: #ffffff !important;
-    color: #000000;
-}
+/* CSS is now handled almost entirely by Tailwind utilities and base.html styles */
