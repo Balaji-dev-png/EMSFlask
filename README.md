@@ -17,7 +17,7 @@ This is a Flask-based CRUD application extended with advanced data management fe
 
 1. **Clone the repository** (or navigate to the project directory):
    ```bash
-   git clone https://github.com/Gagan47raj/Flask-Development.git
+   git clone https://github.com/Balaji-dev-png/EMSFlask
    cd Flask-Development
    ```
 
