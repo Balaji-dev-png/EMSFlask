@@ -1,4 +1,4 @@
-# Advanced Employee Management System (EMS)
+# Employee Management System (EMS)
 
 This is a Flask-based CRUD application extended with advanced data management features, built using Python, Flask, SQLAlchemy, and Bootstrap.
 
