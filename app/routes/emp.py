@@ -1,73 +1,78 @@
 from flask import Blueprint, request, redirect, url_for, render_template
+from app.models.employee import Employee
+from app.models import db
 
 emp_bp = Blueprint('emp', __name__)
-
-# @emp_bp.route('/employees')
-# def employees():
-#     return "<h1>Employee List</h1><p>This page will display a list of employees.</p>"
-
-# @emp_bp.route('/employees/create')
-# def create_emp():
-#     return "<h1>Create Employee</h1><p>This page will allow you to create a new employee.</p>"
-
-# @emp_bp.route('/employees/<int:emp_id>/update')
-# def update_emp(emp_id):
-#     return f"<h1>Update Employee {emp_id}</h1><p>This page will allow you to update employee with ID {emp_id}.</p>"
-
-# @emp_bp.route('/employees/<string:emp_id>/delete')
-# def delete_emp(emp_id):
-#     return f"<h1>Delete Employee {emp_id}</h1><p>This page will allow you to delete employee with ID {emp_id}.</p>"
-
-# @emp_bp.route('/employees/<string:emp_name>/<int:emp_id>')
-# def emp_details(emp_name, emp_id):
-#     return f"<h1>Employee Details for {emp_name}</h1><p>This page will display details for employee with ID {emp_id}.</p>"
-
-
-# @emp_bp.route('/employees/filter')
-# def filteremp():
-
-#     department = request.args.get('department')
-#     salary = request.args.get('salary')
-
-#     return f"department: {department}, salary: {salary}"
-
-
-
-
-
-
-
-
-# @emp_bp.route("/employee/department")
-# def departmentpage():
-#     return redirect(url_for("department.departmentRedirect"))
-
-
 
 @emp_bp.route("/emp/register")
 def empregister():
     return render_template("addemp.html")
 
-
-
-
 @emp_bp.route("/emp")
 def emppage():
+    search = request.args.get('search', '')
+    search_by = request.args.get('search_by', 'name')
+    
+    filter_department = request.args.get('department', '')
+    min_salary = request.args.get('min_salary', type=float)
+    max_salary = request.args.get('max_salary', type=float)
+    
+    sort_by = request.args.get('sort_by', 'id')
+    sort_order = request.args.get('sort_order', 'asc')
+    
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page', 5, type=int)
+
+    query = Employee.query
+
+    if search:
+        if search_by == 'name':
+            query = query.filter(Employee.name.ilike(f'%{search}%'))
+        elif search_by == 'email':
+            query = query.filter(Employee.email.ilike(f'%{search}%'))
+        elif search_by == 'department':
+            query = query.filter(Employee.department.ilike(f'%{search}%'))
+
+    if filter_department:
+        query = query.filter(Employee.department == filter_department)
+    
+    if min_salary is not None:
+        query = query.filter(Employee.salary >= min_salary)
+    
+    if max_salary is not None:
+        query = query.filter(Employee.salary <= max_salary)
+
+    if sort_by == 'name':
+        sort_column = Employee.name
+    elif sort_by == 'email':
+        sort_column = Employee.email
+    elif sort_by == 'department':
+        sort_column = Employee.department
+    elif sort_by == 'salary':
+        sort_column = Employee.salary
+    else:
+        sort_column = Employee.id
+
+    if sort_order == 'desc':
+        query = query.order_by(sort_column.desc())
+    else:
+        query = query.order_by(sort_column.asc())
+
+    pagination = query.paginate(page=page, per_page=per_page, error_out=False)
+
+    departments_result = db.session.query(Employee.department).distinct().all()
+    departments = [d[0] for d in departments_result if d[0]]
+
+    return render_template(
+        "employee.html", 
+        pagination=pagination,
+        departments=departments
+    )
 
 
-    employee_list = Employee.query.all()
-    return render_template("employee.html", employee_list = employee_list)
 
-
-
-
-from app.models.employee import Employee
-from app.models import db
-
-
-@emp_bp.route("/emp/add", methods = ["POST"])
+@emp_bp.route("/emp/add", methods = ["POST", "GET"])
 def addemp():
-
     if request.method == "POST":
         employee = Employee (
             name = request.form["name"],
@@ -86,3 +91,25 @@ def addemp():
 
 
     return render_template("addemp.html")
+
+
+
+@emp_bp.route("/emp/empdetail/<int:emp_id>", methods = ["GET"])
+def empdetail(emp_id):
+
+    employee = Employee.query.get_or_404(emp_id)
+
+    return render_template("emp_detail.html", employee = employee)
+
+
+
+
+@emp_bp.route("/emp/empdelete/<int:emp_id>")
+def empdelete(emp_id):
+
+    employee = Employee.query.get_or_404(emp_id)
+
+    db.session.delete(employee)
+    db.session.commit()
+
+    return redirect(url_for("emp.emppage"))
