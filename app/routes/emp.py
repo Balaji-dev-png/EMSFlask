@@ -102,7 +102,20 @@ def empdetail(emp_id):
     return render_template("emp_detail.html", employee = employee)
 
 
-
+@emp_bp.route("/emp/update/<int:emp_id>", methods=["GET", "POST"])
+def empupdate(emp_id):
+    employee = Employee.query.get_or_404(emp_id)
+    
+    if request.method == "POST":
+        employee.name = request.form["name"]
+        employee.email = request.form["email"]
+        employee.department = request.form["department"]
+        employee.salary = request.form["salary"]
+        
+        db.session.commit()
+        return redirect(url_for("emp.emppage"))
+        
+    return render_template("updateemp.html", employee=employee)
 
 @emp_bp.route("/emp/empdelete/<int:emp_id>")
 def empdelete(emp_id):
