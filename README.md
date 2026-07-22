@@ -18,7 +18,7 @@ This is a Flask-based CRUD application extended with advanced data management fe
 1. **Clone the repository** (or navigate to the project directory):
    ```bash
    git clone https://github.com/Balaji-dev-png/EMSFlask
-   cd Flask-Development
+   cd EMSFlask
    ```
 
 2. **Set up a Virtual Environment**:
